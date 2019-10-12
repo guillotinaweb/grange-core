@@ -17,7 +17,15 @@
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "paths": {
+      "grange-core": [
+        "dist/grange-core"
+      ],
+      "grange-core/*": [
+        "dist/grange-core/*"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,

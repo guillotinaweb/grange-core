@@ -3,11 +3,11 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "test": "ng test",
+    "start": "ng serve demo",
+    "build": "ng build grange-core --prod && cp ./README.md ./dist/grange-core",
+    "test": "jest",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "test:watch": "jest --watch"
   },
   "private": true,
   "dependencies": {
@@ -19,28 +19,60 @@
     "@angular/platform-browser": "~8.2.9",
     "@angular/platform-browser-dynamic": "~8.2.9",
     "@angular/router": "~8.2.9",
+    "@briebug/jest-schematic": "^2.1.0",
     "rxjs": "~6.4.0",
     "tslib": "^1.10.0",
     "zone.js": "~0.9.1"
   },
   "devDependencies": {
+    "@angular-devkit/build-angular": "~0.803.9",
+    "@angular-devkit/build-ng-packagr": "~0.803.9",
     "@angular/cli": "~8.3.9",
     "@angular/compiler-cli": "~8.2.9",
     "@angular/language-service": "~8.2.9",
+    "@types/jest": "24.0.18",
     "@types/node": "~8.9.4",
     "@types/jasmine": "~3.3.8",
     "@types/jasminewd2": "~2.0.3",
     "codelyzer": "^5.0.0",
     "jasmine-core": "~3.4.0",
     "jasmine-spec-reporter": "~4.2.1",
-    "karma": "~4.1.0",
-    "karma-chrome-launcher": "~2.2.0",
-    "karma-coverage-istanbul-reporter": "~2.0.1",
-    "karma-jasmine": "~2.0.1",
-    "karma-jasmine-html-reporter": "^1.4.0",
-    "protractor": "~5.4.0",
+    "jest": "24.9.0",
+    "jest-preset-angular": "7.1.1",
+    "ng-packagr": "^5.4.0",
     "ts-node": "~7.0.0",
+    "tsickle": "^0.37.0",
     "tslint": "~5.15.0",
     "typescript": "~3.5.3"
+  },
+  "jest": {
+    "preset": "jest-preset-angular",
+    "roots": [
+      "src",
+      "projects/grange-core"
+    ],
+    "transform": {
+      "^.+\\.(ts|js|html)$": "ts-jest"
+    },
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setup-jest.ts"
+    ],
+    "moduleNameMapper": {
+      "@app/(.*)": "<rootDir>/src/app/$1",
+      "@assets/(.*)": "<rootDir>/src/assets/$1",
+      "@core/(.*)": "<rootDir>/src/app/core/$1",
+      "@env": "<rootDir>/src/environments/environment",
+      "@src/(.*)": "<rootDir>/src/src/$1",
+      "@state/(.*)": "<rootDir>/src/app/state/$1"
+    },
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "<rootDir>/tsconfig.spec.json",
+        "stringifyContentPathRegex": "\\.html$",
+        "astTransformers": [
+          "jest-preset-angular/InlineHtmlStripStylesTransformer.js"
+        ]
+      }
+    }
   }
 }
