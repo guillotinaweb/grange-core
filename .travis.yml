@@ -13,11 +13,16 @@ script:
 notifications:
   email:
   - ebrehault@gmail.com
+before_deploy:
+  - git config --global user.email "build@travis-ci.com"
+  - git config --global user.name "Travis CI"
+  - export PACKAGE_VERSION=$(npm run get_version | tail -n 1)
+  - echo "TAGGING $PACKAGE_VERSION..."
+  - git tag $PACKAGE_VERSION
 deploy:
   provider: releases
   api_key:
     secure: mJQHF3GdCzCFo+2sB6PEtJJjbbleE92fCugN9uIeOynsXYpZ169/2QGhWp0hGpjm3/BNfR07lnHlowCTAorQmsMVdyW6Ud8Ob9g8N45kv35QyibiaO75BBReMuKQbSXx3tfNWrlDcNmpGv/ja0qb4vJEJBL96KjOOEHNA7fdJE88MR35muLZx1GxTkKiAGljhzGHfz/4wFJy3TpVMIB3dQ8vwoWF1Gt8WFAUg8ZxbyWcz4laIKAjZ2F8pdF+dTiRJWEaCiCu8MluCdGHre4LJ4YEAV6P62G8ohN5YKneh+X6OXtGvK497+TA1Hae7xBjzNn3j1ExekUw4aglSj5jTIZ3TA7C5OmBNk23I1aBiHVv2NB+eJNsZVWP0OXxghMkSwPnOIePJr14Que9uA7sYvs5rQ6yuYh7dVMZdxAZAU906HC2J1L/ZXJwDljIg4VXk888dtS/q9ApeR7NJnXXDXkSKmbJEB7D9ftcWlZlnOvqyDKuuKksvCl1k947aBDgvV8A+LNoe1G/wWMTN3/87W4400biLYqPW9hn2G9GVmpyTGqr1atKv+CrPK3NzubBPF96b5CTsG5YOegv1W0eNQ85eVbsHuJvyZQqypN8cohrTEFSSDHpcQ2pYelcWfrA+j8AExB4mUsd/6Bj7oMEBXBVCYdHz5HxqqEiEnDNTQg=
-  script: "$TRAVIS_BUILD_DIR/travis_release.sh"
   on:
     repo: guillotinaweb/grange-core
     branch: master
