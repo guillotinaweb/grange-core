@@ -7,6 +7,7 @@
     "build": "ng build grange-core --prod && cp ./README.md ./dist/grange-core",
     "test": "jest",
     "lint": "ng lint",
+    "get_version": "cat ./projects/grange-core/package.json | grep version  | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g'",
     "test:watch": "jest --watch"
   },
   "private": true,

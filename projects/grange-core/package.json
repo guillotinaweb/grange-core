@@ -1,6 +1,24 @@
 {
   "name": "grange-core",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "license": "MIT",
+  "author": {
+    "name": "Eric Brehault",
+    "email": "ebrehault@gmail.com"
+  },
+  "description": "A set of services to communicate with a Guillotina or Plone RESTAPI backend",
+  "keywords": [
+    "angular",
+    "guillotina",
+    "plone"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guillotinaweb/grange-core"
+  },
+  "bugs": {
+    "url": "https://github.com/guillotinaweb/grange-core/issues"
+  },
   "peerDependencies": {
     "@angular/common": "^8.2.9",
     "@angular/core": "^8.2.9"
