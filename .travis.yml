@@ -3,13 +3,21 @@ node_js:
 - 12.4.0
 cache:
   directories:
-    - node_modules
+  - node_modules
 dist: trusty
 install:
-  - npm install
+- npm install
 script:
-  - npm run test
-  - npm run build
+- npm run test
+- npm run build
 notifications:
   email:
   - ebrehault@gmail.com
+deploy:
+  provider: releases
+  script: "$TRAVIS_BUILD_DIR/travis_release.sh"
+  on:
+    branch: master
+env:
+  global:
+    secure: thAwy9YF1DT63dpZ1mVsjG6vuwFBvUoVENo22QiUperLnjk5qtk08BnF56hzpId9zLEGwA2zfsN/6AU62oxoDmntlwM94d6S5PfjCQL51oz5QVYsLjqVbw1jjh+995i/JyaoK120HOSeKlHOT967h4bjFhuJk1NDOG+beaojyL8Nsw9Lm2dx5QiKPNEvskyHctEO9Q1qth5LeNB9kmYe1fR6lFXUdju5nq0oGPgjrBsPufRz3+iqgyjQGxErki7UU+pD9t3ErKXmx4uhrzWSB5BRCgqNf8XXJLFyvRWm/XHo1y49OasU5NgWIYCCMTgzMpXCOSXwapKP51DGKPgD6T45OAgzZNPRTpmbg78hmwF5i16gSPVbDsRLBUW/jCJYQVloJz2A5aAytRPJwq60ubm0qgBZ/601FdjPa664z/WgqoOWwC9KPKmQ/qm8tlV/1aidmwZK/rT+DF25aMdCVkT709AwGmEXhNMvHbT+EsK3WuktAobjjT3NjuY+BHaJarHqePerVTwMn/Kozv+nry2anYOGwfGhXf4HCDuXU3ozahY44rN5nrSWvnY/ck82o7kcb0Tz2yoTltAKth7fIuVs+YdlGFkrtfzAggM80GLovWg2l9MdSnBFJdJ33YWUNYXnH91k6l33qBWmlvuBZof5spFARcEYmSCJt4WSQwc=
