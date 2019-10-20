@@ -6,7 +6,7 @@ import {
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { AuthenticatedStatus, Error, PasswordResetInfo, UserInfoTokenParts, LoginToken } from './interfaces';
-import { tap, catchError } from 'rxjs/operators';
+import { tap, catchError, map } from 'rxjs/operators';
 import { ConfigurationService } from './configuration.service';
 
 @Injectable({
@@ -79,28 +79,33 @@ export class AuthenticationService {
         });
     }
 
+    setAuthToken(token: string) {
+        localStorage.setItem('auth', token);
+        localStorage.setItem(
+            'auth_time',
+            new Date().toISOString(),
+        );
+        this.isAuthenticated.next({
+            state: true,
+            pending: false,
+            username: this.getUsername(),
+        });
+    }
+
     login(login: string, password: string, path?: string): Observable<any> {
         const headers = this.getHeaders();
         const body = JSON.stringify({
-            login: login,  // on plone.restapi login endpoint, username key is login
-            password: password,
+            login,
+            password,
         });
         return this.http
             .post(this.config.get('BACKEND_URL') + (path || '') + '/@login', body, {
-                headers: headers,
+                headers,
             }).pipe(
-                tap((data: LoginToken) => {
+                map((data: LoginToken) => {
                     if (data.token) {
-                        localStorage.setItem('auth', data['token']);
-                        localStorage.setItem(
-                            'auth_time',
-                            new Date().toISOString(),
-                        );
-                        this.isAuthenticated.next({
-                            state: true,
-                            pending: false,
-                            username: this.getUsername(),
-                        });
+                        this.setAuthToken(data.token);
+                        return true;
                     } else {
                         localStorage.removeItem('auth');
                         localStorage.removeItem('auth_time');
@@ -109,6 +114,7 @@ export class AuthenticationService {
                             pending: false,
                             username: null,
                         });
+                        return false;
                     }
                 }),
                 catchError((errorResponse: HttpErrorResponse) => {

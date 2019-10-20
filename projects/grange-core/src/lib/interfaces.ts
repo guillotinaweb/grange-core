@@ -119,3 +119,13 @@ export interface SearchResults {
     items: any[];
     batching: Batching;
 }
+
+export interface Resource {
+    '@id': string;
+    '@name': string;
+    '@type': string;
+    '@uid': string;
+    title: string;
+    description?: string;
+    is_folderish: boolean;
+}

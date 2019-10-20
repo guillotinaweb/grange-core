@@ -1,3 +1,4 @@
+export { GrangeCore } from './lib/core.service';
 export { APIService } from './lib/api.service';
 export { AuthenticationService } from './lib/authentication.service';
 export { CacheService } from './lib/cache.service';

@@ -8,6 +8,7 @@ import {
     WorkflowHistoryItem,
     WorkflowInformation,
     WorkflowTransitionOptions,
+    Resource,
 } from './interfaces';
 import { Vocabulary } from './vocabularies';
 import { APIService } from './api.service';
@@ -193,7 +194,7 @@ export class ResourceService {
         return this.cache.get(path);
     }
 
-    items(path: string, page = 1): Observable<any> {
+    items(path: string, page = 1): Observable<{items: Resource[], page: number, page_size: number, total: number}> {
         return this.cache.get(`${path}/@items?page=${page}`);
     }
 
