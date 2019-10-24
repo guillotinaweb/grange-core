@@ -20,10 +20,10 @@
     ],
     "paths": {
       "grange-core": [
-        "dist/grange-core"
+        "projects/grange-core/src"
       ],
       "grange-core/*": [
-        "dist/grange-core/*"
+        "projects/grange-core/src/*"
       ]
     }
   },

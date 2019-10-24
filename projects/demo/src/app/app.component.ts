@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthenticationService, ResourceService } from 'projects/grange-core/src';
+import { AuthenticationService, ResourceService } from 'grange-core';
 import { concatMap } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';
 
