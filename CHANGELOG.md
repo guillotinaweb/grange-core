@@ -1,3 +1,7 @@
+# 1.0.2 (2020-01-24)
+
+- Auto-tagging and auto-release to NPM
+
 # 1.0.1 (2019-10-20)
 
 - Fix authentication
