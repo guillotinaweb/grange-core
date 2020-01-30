@@ -10,6 +10,7 @@ export interface AuthenticatedStatus {
 export interface LoginInfo {
     login: string;
     password: string;
+    token: string;
 }
 
 export interface PasswordResetInfo {
