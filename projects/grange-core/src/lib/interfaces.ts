@@ -13,6 +13,10 @@ export interface LoginInfo {
     token: string;
 }
 
+export interface RecoverInfo {
+  login: string;
+}
+
 export interface PasswordResetInfo {
     oldPassword?: string;
     newPassword: string;
