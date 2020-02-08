@@ -204,7 +204,7 @@ export class AuthenticationService {
     window.location.href = callUrl;
   }
 
-  getValidationSchema(token) {
+  getValidationSchema(token: string): Observable<any> {
     const headers = this.getHeaders();
     const url =
     this.config.get('BACKEND_URL') +
@@ -216,11 +216,11 @@ export class AuthenticationService {
     );
   }
 
-  doValidation(token, model) {
+  doValidation(token: string, model: any): Observable<any> {
     const headers = this.getHeaders();
     const url =
     this.config.get('BACKEND_URL') +
-    `/@validation/${token}`;
+    `/@validate/${token}`;
     return this.http
       .post(url, model, { headers: headers })
       .pipe(
