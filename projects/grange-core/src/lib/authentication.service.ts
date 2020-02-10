@@ -210,7 +210,7 @@ export class AuthenticationService {
     this.config.get('BACKEND_URL') +
     `/@validate_schema/${token}`;
     return this.http
-      .get(url, { headers: headers })
+      .post(url, {}, { headers: headers })
       .pipe(
         catchError(this.error.bind(this))
     );
