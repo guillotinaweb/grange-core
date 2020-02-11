@@ -2,6 +2,7 @@ export { GrangeCore } from './lib/core.service';
 export { APIService } from './lib/api.service';
 export { AuthenticationService } from './lib/authentication.service';
 export { CacheService } from './lib/cache.service';
+export { ReCaptchaV3Service } from './lib/recaptcha_v3.service';
 export { ConfigurationService } from './lib/configuration.service';
 export * from './lib/loading.service';
 export * from './lib/resource.service';

@@ -1,7 +1,9 @@
 // Code refactored from ngx-captcha package because was not released with promise call
 import { Injectable, Inject, NgZone } from '@angular/core';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ReCaptchaV3Service {
 
     protected readonly windowGrecaptcha = 'grecaptcha';
@@ -93,7 +95,6 @@ export class ReCaptchaV3Service {
                   resolve(token);
                 });
               })
-              .catch(reject);
           });
         };
 

@@ -4,9 +4,9 @@ import {
   HttpHeaders,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, from } from 'rxjs';
 import { AuthenticatedStatus, Error, PasswordResetInfo, UserInfoTokenParts, LoginToken } from './interfaces';
-import { tap, catchError, map } from 'rxjs/operators';
+import { tap, catchError, map, concatMap } from 'rxjs/operators';
 import { ReCaptchaV3Service } from './recaptcha_v3.service';
 import { ConfigurationService } from './configuration.service';
 
@@ -94,7 +94,7 @@ export class AuthenticationService {
     });
   }
 
-  getHeaders(): HttpHeaders {
+  getHeaders(recaptcha?: string): HttpHeaders {
     let headers = new HttpHeaders();
     headers = headers.set('Accept', 'application/json');
     headers = headers.set('Content-Type', 'application/json');
@@ -103,6 +103,9 @@ export class AuthenticationService {
       headers = headers.set('Authorization', 'Bearer ' + auth);
     } else if (!!this.basicCredentials) {
       headers = headers.set('Authorization', 'Basic ' + btoa(this.basicCredentials.join(':')));
+    }
+    if (recaptcha) {
+      headers = headers.set('X-VALIDATION-G', recaptcha);
     }
     return headers;
   }
@@ -120,19 +123,21 @@ export class AuthenticationService {
 
   login(login: string, password: string, path?: string): Observable<any> {
     if (this.config.get('RECAPTCHA_TOKEN')) {
-      this.recaptcha.execute(this.config.get('RECAPTCHA_TOKEN'), 'login', (token) => {
-        return this.doLogin(login, password, path, token);
-      });
+      const promise = this.recaptcha.executeAsPromise(this.config.get('RECAPTCHA_TOKEN'), 'login');
+      return from(promise).pipe(
+        concatMap((token: string) => {
+          return this.doLogin(login, password, path, token);
+        }),
+        catchError((err) => {
+          return Observable.throw(err);
+        }));
     } else {
       return this.doLogin(login, password, path);
     }
   }
 
   doLogin(login: string, password: string, path?: string, recaptcha?: string): Observable<any> {
-    const headers = this.getHeaders();
-    if (recaptcha) {
-      headers['X-VALIDATION-G'] = recaptcha;
-    }
+    const headers = this.getHeaders(recaptcha);
     const body = JSON.stringify({
       login,
       password,
@@ -186,11 +191,8 @@ export class AuthenticationService {
     this.isAuthenticated.next({ state: false, pending: false, username: null });
   }
 
-  doLogout(recaptcha?: string) {
+  logout() {
     const headers = this.getHeaders();
-    if (recaptcha !== undefined) {
-      headers['X-VALIDATION-G'] = recaptcha;
-    }
     const url =
       this.config.get('BACKEND_URL') + `/@logout`;
     this.http
@@ -205,26 +207,12 @@ export class AuthenticationService {
           this._logout();
         }
       );
-
-  }
-
-  logout() {
-    if (this.config.get('RECAPTCHA_TOKEN')) {
-      this.recaptcha.execute(this.config.get('RECAPTCHA_TOKEN'), 'logout', (token) => {
-        this.doLogout(token);
-      });
-    } else {
-      this.doLogout();
-    }
   }
 
   // RESET PASSWORD LOGIN
 
   doRequestPasswordReset(login: string, recaptcha?: string): Observable<any> {
-    const headers = this.getHeaders();
-    if (recaptcha !== undefined) {
-      headers['X-VALIDATION-G'] = recaptcha;
-    }
+    const headers = this.getHeaders(recaptcha);
     const url =
       this.config.get('BACKEND_URL') + `/@users/${login}/reset-password`;
     return this.http
@@ -236,9 +224,14 @@ export class AuthenticationService {
 
   requestPasswordReset(login: string): Observable<any> {
     if (this.config.get('RECAPTCHA_TOKEN')) {
-      this.recaptcha.execute(this.config.get('RECAPTCHA_TOKEN'), 'reset', (token) => {
-        return this.doRequestPasswordReset(login, token);
-      });
+      const promise = this.recaptcha.executeAsPromise(this.config.get('RECAPTCHA_TOKEN'), 'reset');
+      return from(promise).pipe(
+        concatMap((token: string) => {
+          return this.doRequestPasswordReset(login, token)
+        }),
+        catchError((err) => {
+          return Observable.throw(err);
+        }));
     } else {
       return this.doRequestPasswordReset(login);
     }
@@ -275,10 +268,7 @@ export class AuthenticationService {
   // VALIDATION LOGIC
 
   doGetValidationSchema(token: string, recaptcha?: string): Observable<any> {
-    const headers = this.getHeaders();
-    if (recaptcha !== undefined) {
-      headers['X-VALIDATION-G'] = recaptcha;
-    }
+    const headers = this.getHeaders(recaptcha);
     const url =
     this.config.get('BACKEND_URL') +
     `/@validate_schema/${token}`;
@@ -291,19 +281,21 @@ export class AuthenticationService {
 
   getValidationSchema(token: string): Observable<any> {
     if (this.config.get('RECAPTCHA_TOKEN')) {
-      this.recaptcha.execute(this.config.get('RECAPTCHA_TOKEN'), 'schema', (recaptcha) => {
-        return this.doGetValidationSchema(token, recaptcha);
-      });
+      const promise = this.recaptcha.executeAsPromise(this.config.get('RECAPTCHA_TOKEN'), 'schema');
+      return from(promise).pipe(
+        concatMap((recaptcha: string) => {
+          return this.doGetValidationSchema(token, recaptcha)
+        }),
+        catchError((err) => {
+          return Observable.throw(err);
+        }));
     } else {
       return this.doGetValidationSchema(token);
     }
   }
 
   doRealValidation(token: string, model: any, recaptcha?: string): Observable<any> {
-    const headers = this.getHeaders();
-    if (recaptcha !== undefined) {
-      headers['X-VALIDATION-G'] = recaptcha;
-    }
+    const headers = this.getHeaders(recaptcha);
     const url =
       this.config.get('BACKEND_URL') +
       `/@validate/${token}`;
@@ -317,19 +309,21 @@ export class AuthenticationService {
 
   doValidation(token: string, model: any): Observable<any> {
     if (this.config.get('RECAPTCHA_TOKEN')) {
-      this.recaptcha.execute(this.config.get('RECAPTCHA_TOKEN'), 'validation', (recaptcha) => {
-        return this.doRealValidation(token, model, recaptcha);
-      });
+      const promise = this.recaptcha.executeAsPromise(this.config.get('RECAPTCHA_TOKEN'), 'validation');
+      return from(promise).pipe(
+        concatMap((recaptcha: string) => {
+          return this.doRealValidation(token, model, recaptcha)
+        }),
+        catchError((err) => {
+          return Observable.throw(err);
+        }));
     } else {
       return this.doRealValidation(token, model);
     }
   }
 
   doGetInfo(recaptcha?: string) {
-    const headers = this.getHeaders();
-    if (recaptcha !== undefined) {
-      headers['X-VALIDATION-G'] = recaptcha;
-    }
+    const headers = this.getHeaders(recaptcha);
     const url =
       this.config.get('BACKEND_URL') + `/@info`;
     return this.http
@@ -341,9 +335,15 @@ export class AuthenticationService {
 
   getInfo(): Observable<any> {
     if (this.config.get('RECAPTCHA_TOKEN')) {
-      this.recaptcha.execute(this.config.get('RECAPTCHA_TOKEN'), 'info', (recaptcha) => {
-        return this.doGetInfo(recaptcha);
-      });
+
+      const promise = this.recaptcha.executeAsPromise(this.config.get('RECAPTCHA_TOKEN'), 'info');
+      return from(promise).pipe(
+        concatMap((recaptcha: string) => {
+          return this.doGetInfo(recaptcha);
+        }),
+        catchError((err) => {
+          return Observable.throw(err);
+        }));
     } else {
       return this.doGetInfo();
     }
