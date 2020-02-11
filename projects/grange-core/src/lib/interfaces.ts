@@ -17,6 +17,12 @@ export interface RecoverInfo {
   login: string;
 }
 
+export interface ContainerInfo {
+  register: boolean;
+  social: string[];
+}
+
+
 export interface PasswordResetInfo {
     oldPassword?: string;
     newPassword: string;
