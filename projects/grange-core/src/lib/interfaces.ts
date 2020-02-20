@@ -10,7 +10,18 @@ export interface AuthenticatedStatus {
 export interface LoginInfo {
     login: string;
     password: string;
+    token: string;
 }
+
+export interface RecoverInfo {
+  login: string;
+}
+
+export interface ContainerInfo {
+  register: boolean;
+  social: string[];
+}
+
 
 export interface PasswordResetInfo {
     oldPassword?: string;

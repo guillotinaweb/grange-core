@@ -29,7 +29,8 @@ describe('APIService', () => {
         {
           provide: 'CONFIGURATION', useValue: {
           BACKEND_URL: 'http://fake/Plone',
-        }}
+        }},
+        { provide: 'LANG', useValue: 'en'},
       ]
     });
 
