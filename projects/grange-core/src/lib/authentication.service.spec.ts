@@ -1,9 +1,11 @@
 import { HttpErrorResponse, HttpEventType, HttpHeaders } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
+import { TestBed, async } from '@angular/core/testing';
 import { AuthenticatedStatus, Error, PasswordResetInfo } from './interfaces';
 import { AuthenticationService, getError } from './authentication.service';
 import { ConfigurationService } from './configuration.service';
+import { ReCaptchaV3Service } from './recaptcha_v3.service';
+import { filter } from 'rxjs/operators';
 
 describe('AuthenticationService', () => {
   beforeEach(() => {
@@ -12,11 +14,13 @@ describe('AuthenticationService', () => {
       providers: [
         AuthenticationService,
         ConfigurationService,
+        ReCaptchaV3Service,
         {
           provide: 'CONFIGURATION', useValue: {
             BACKEND_URL: 'http://fake/Plone',
           }
         },
+        { provide: 'LANG', useValue: 'en'},
       ]
     });
   });
@@ -89,15 +93,14 @@ describe('AuthenticationService', () => {
   });
 
   it('should logout', () => {
-    const service = TestBed.get(AuthenticationService);
+    const service: AuthenticationService = TestBed.get(AuthenticationService);
 
     // fake login
     localStorage.setItem('auth', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZnVsbG5hbWUiOiJGb28gYmFyIiwiZ' +
       'XhwaXJlcyI6MTQ2NjE0MDA2Ni42MzQ5ODYsInR5cGUiOiJKV1QiLCJhbGdvcml0aG0iOiJIUzI1NiJ9.D9EL5A9xD1z3E_HPecXA-Ee7kKlljYvpDtan69KHwZ8');
     localStorage.setItem('auth_time', (new Date()).toISOString());
 
-    service.logout();
-
+    service._logout();
     expect(localStorage.getItem('auth')).toEqual(null);
     expect(localStorage.getItem('auth_time')).toEqual(null);
   });

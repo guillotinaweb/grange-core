@@ -1,6 +1,6 @@
 {
-  "name": "@guillotinaweb/grange-core",
-  "version": "1.0.3",
+  "name": "grange-core",
+  "version": "1.1.0",
   "license": "MIT",
   "author": {
     "name": "Eric Brehault",

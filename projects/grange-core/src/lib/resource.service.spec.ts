@@ -3,7 +3,7 @@ import {
   HttpClientTestingModule,
   HttpTestingController
 } from '@angular/common/http/testing';
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { TestBed, async } from '@angular/core/testing';
 import { NamedFileUpload, NavLink } from './interfaces';
 import { Vocabulary } from './vocabularies';
 import { APIService } from './api.service';
@@ -29,7 +29,8 @@ describe('ResourceService', () => {
           useValue: {
             BACKEND_URL: 'http://fake/Plone'
           }
-        }
+        },
+        { provide: 'LANG', useValue: 'en'},
       ]
     });
   });
@@ -588,7 +589,7 @@ describe('ResourceService', () => {
 
   it(
     'should get a file upload',
-    fakeAsync(() => {
+    async(() => {
       const blob: { [key: string]: any } = new Blob([''], { type: 'text/csv' });
       blob['name'] = 'filename.csv';
 
@@ -601,7 +602,6 @@ describe('ResourceService', () => {
           expect(namedFile['content-type']).toBe('text/csv');
         }
       );
-      tick();
     })
   );
 });

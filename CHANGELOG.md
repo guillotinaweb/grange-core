@@ -1,3 +1,7 @@
+# 1.1.0 (2020-02-20)
+
+- Support full login logic (bloodbare)
+
 # 1.0.3 (2020-01-24)
 
 - Auto-tagging and auto-release to NPM

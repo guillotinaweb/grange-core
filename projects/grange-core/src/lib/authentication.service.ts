@@ -4,9 +4,9 @@ import {
   HttpHeaders,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, from } from 'rxjs';
+import { BehaviorSubject, Observable, from, throwError } from 'rxjs';
 import { AuthenticatedStatus, Error, PasswordResetInfo, UserInfoTokenParts, LoginToken } from './interfaces';
-import { tap, catchError, map, concatMap } from 'rxjs/operators';
+import { catchError, map, concatMap } from 'rxjs/operators';
 import { ReCaptchaV3Service } from './recaptcha_v3.service';
 import { ConfigurationService } from './configuration.service';
 
@@ -116,7 +116,7 @@ export class AuthenticationService {
 
   protected error(errorResponse: HttpErrorResponse): Observable<Error> {
     const error: Error = getError(errorResponse);
-    return Observable.throw(error);
+    return throwError(error);
   }
 
   // LOGIN LOGIC
@@ -129,7 +129,7 @@ export class AuthenticationService {
           return this.doLogin(login, password, path, token);
         }),
         catchError((err) => {
-          return Observable.throw(err);
+          return throwError(err);
         }));
     } else {
       return this.doLogin(login, password, path);
@@ -177,14 +177,14 @@ export class AuthenticationService {
               error: error.message,
             });
           }
-          return Observable.throw(error);
+          return throwError(error);
         })
       );
   }
 
   // LOGOUT LOGIC
 
-  private _logout() {
+  _logout() {
     this.cleanBasicCredentials();
     localStorage.removeItem('auth');
     localStorage.removeItem('auth_time');
@@ -196,7 +196,7 @@ export class AuthenticationService {
     const url =
       this.config.get('BACKEND_URL') + `/@logout`;
     this.http
-      .post(url, {}, { headers: headers })
+      .post(url, {}, { headers })
       .pipe(
         catchError(this.error.bind(this))
       ).subscribe(
@@ -216,7 +216,7 @@ export class AuthenticationService {
     const url =
       this.config.get('BACKEND_URL') + `/@users/${login}/reset-password`;
     return this.http
-      .post(url, {}, { headers: headers })
+      .post(url, {}, { headers })
       .pipe(
         catchError(this.error.bind(this))
       );
@@ -227,10 +227,10 @@ export class AuthenticationService {
       const promise = this.recaptcha.executeAsPromise(this.config.get('RECAPTCHA_TOKEN'), 'reset');
       return from(promise).pipe(
         concatMap((token: string) => {
-          return this.doRequestPasswordReset(login, token)
+          return this.doRequestPasswordReset(login, token);
         }),
         catchError((err) => {
-          return Observable.throw(err);
+          return throwError(err);
         }));
     } else {
       return this.doRequestPasswordReset(login);
@@ -254,7 +254,7 @@ export class AuthenticationService {
       this.config.get('BACKEND_URL') +
       `/@users/${resetInfo.login}/reset-password`;
     return this.http
-      .post(url, data, { headers: headers })
+      .post(url, data, { headers })
       .pipe(
         catchError(this.error.bind(this))
       );
@@ -273,7 +273,7 @@ export class AuthenticationService {
     this.config.get('BACKEND_URL') +
     `/@validate_schema/${token}`;
     return this.http
-      .post(url, {}, { headers: headers })
+      .post(url, {}, { headers })
       .pipe(
         catchError(this.error.bind(this))
     );
@@ -284,10 +284,10 @@ export class AuthenticationService {
       const promise = this.recaptcha.executeAsPromise(this.config.get('RECAPTCHA_TOKEN'), 'schema');
       return from(promise).pipe(
         concatMap((recaptcha: string) => {
-          return this.doGetValidationSchema(token, recaptcha)
+          return this.doGetValidationSchema(token, recaptcha);
         }),
         catchError((err) => {
-          return Observable.throw(err);
+          return throwError(err);
         }));
     } else {
       return this.doGetValidationSchema(token);
@@ -300,7 +300,7 @@ export class AuthenticationService {
       this.config.get('BACKEND_URL') +
       `/@validate/${token}`;
     return this.http
-      .post(url, model, { headers: headers })
+      .post(url, model, { headers })
       .pipe(
         catchError(this.error.bind(this))
     );
@@ -312,10 +312,10 @@ export class AuthenticationService {
       const promise = this.recaptcha.executeAsPromise(this.config.get('RECAPTCHA_TOKEN'), 'validation');
       return from(promise).pipe(
         concatMap((recaptcha: string) => {
-          return this.doRealValidation(token, model, recaptcha)
+          return this.doRealValidation(token, model, recaptcha);
         }),
         catchError((err) => {
-          return Observable.throw(err);
+          return throwError(err);
         }));
     } else {
       return this.doRealValidation(token, model);
@@ -327,7 +327,7 @@ export class AuthenticationService {
     const url =
       this.config.get('BACKEND_URL') + `/@info`;
     return this.http
-      .get(url, { headers: headers })
+      .get(url, { headers })
       .pipe(
         catchError(this.error.bind(this))
     );
@@ -342,7 +342,7 @@ export class AuthenticationService {
           return this.doGetInfo(recaptcha);
         }),
         catchError((err) => {
-          return Observable.throw(err);
+          return throwError(err);
         }));
     } else {
       return this.doGetInfo();

@@ -61,6 +61,7 @@ describe('CacheService', () => {
                         CACHE_REFRESH_DELAY: 1000,
                     }
                 },
+                { provide: 'LANG', useValue: 'en'},
                 CacheService,
             ]
         });
@@ -152,6 +153,7 @@ describe('CacheService', () => {
                         CACHE_REFRESH_DELAY: 5
                     }
                 },
+                { provide: 'LANG', useValue: 'en'},
                 CacheService,
             ]
         });
@@ -196,6 +198,7 @@ describe('CacheService', () => {
                         CACHE_MAX_SIZE: 2,
                     }
                 },
+                { provide: 'LANG', useValue: 'en'},
                 CacheService,
             ]
         });
