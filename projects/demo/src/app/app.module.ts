@@ -15,9 +15,10 @@ import { HttpClientModule } from '@angular/common/http';
     providers: [
         {
             provide: 'CONFIGURATION', useValue: {
-                BACKEND_URL: 'http://0.0.0.0:8080',
+                BACKEND_URL: 'http://0.0.0.0:8081',
             }
-        }
+        },
+        { provide: 'LANG', useValue: 'en_US' },
     ],
     bootstrap: [AppComponent]
 })

@@ -17,9 +17,10 @@
           },
           "configurations": {
             "production": {
-              "project": "projects/grange-core/ng-package.json"
+              "project": "projects/grange-core/ng-package.json",
+              "tsConfig": "projects/grange-core/tsconfig.lib.prod.json"
             }
-          }
+        }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
@@ -58,7 +59,7 @@
             "main": "projects/demo/src/main.ts",
             "polyfills": "projects/demo/src/polyfills.ts",
             "tsConfig": "projects/demo/tsconfig.app.json",
-            "aot": false,
+            "aot": true,
             "assets": [
               "projects/demo/src/favicon.ico",
               "projects/demo/src/assets"
@@ -81,7 +82,6 @@
               "sourceMap": false,
               "extractCss": true,
               "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,

@@ -1,3 +1,7 @@
+# 1.2.0 (2020-02-29)
+
+- Upgrade to Angular 9
+
 # 1.1.0 (2020-02-20)
 
 - Support full login logic (bloodbare)
