@@ -1,3 +1,7 @@
+# 1.2.1 (2020-03-07)
+
+- Move NPM package to guillotinaweb organization
+
 # 1.2.0 (2020-02-29)
 
 - Upgrade to Angular 9
