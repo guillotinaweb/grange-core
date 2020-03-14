@@ -127,7 +127,7 @@ export interface Batching {
 export interface SearchResults {
     '@id': string;
     items_total: number;
-    items: any[];
+    items: BaseItem[];
     batching: Batching;
 }
 
@@ -139,4 +139,44 @@ export interface Resource {
     title: string;
     description?: string;
     is_folderish: boolean;
+}
+
+export interface GrangeType {
+    '@id': string;
+    addable: boolean;
+    title: string;
+}
+
+export interface GrangeAction {
+    icon: string;
+    id: string;
+    title: string;
+}
+
+export interface BaseItem {
+    '@id': string;
+    '@type': string;
+    description: string;
+    review_state: string;
+    title: string;
+}
+
+export interface Role {
+    '@id': string;
+    '@type': string;
+    id: string;
+    title: string;
+}
+export interface GrangeFile {
+    'content-type': string;
+    data?: string;
+    encoding?: string;
+    download?: string;
+    filename: string;
+    size?: number;
+}
+
+export interface GrangeImage extends GrangeFile {
+    height?: number;
+    width?: number;
 }

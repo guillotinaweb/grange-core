@@ -44,6 +44,14 @@ export class AuthenticationService {
     }
   }
 
+  getUser(): Observable<any>  {
+    const headers = this.getHeaders();
+    return this.http
+        .get(this.config.get('BACKEND_URL') + '/@users/' + this.getUsername(), {
+            headers,
+        });
+  }
+
   getUsername(): string | null {
     const userTokenInfo = this.getUserTokenInfo();
     if (userTokenInfo === null) {
