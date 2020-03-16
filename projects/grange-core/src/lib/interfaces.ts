@@ -139,6 +139,7 @@ export interface Resource {
     title: string;
     description?: string;
     is_folderish: boolean;
+    parent: BaseItem;
 }
 
 export interface GrangeType {
