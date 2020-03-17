@@ -12,6 +12,8 @@ import {
     GrangeType,
     GrangeAction,
     Role,
+    SearchResultsExtended,
+    BaseItem,
 } from './interfaces';
 import { Vocabulary } from './vocabularies';
 import { APIService } from './api.service';
@@ -183,6 +185,21 @@ export class ResourceService {
             path += '/';
         }
 
+        const queryString = ResourceService.getSearchQueryString(
+            query,
+            options,
+        );
+        return this.cache.get(path + '@search' + '?' + queryString);
+    }
+    findFullObject<T extends BaseItem>(
+        query: { [key: string]: any },
+        path: string = '/',
+        options: SearchOptions = {},
+    ): Observable<SearchResultsExtended<T>> {
+        if (!path.endsWith('/')) {
+            path += '/';
+        }
+        options.fullobjects = true;
         const queryString = ResourceService.getSearchQueryString(
             query,
             options,

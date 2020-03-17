@@ -131,6 +131,10 @@ export interface SearchResults {
     batching: Batching;
 }
 
+export interface SearchResultsExtended<T extends BaseItem> extends SearchResults{
+    items: Array<T>;
+}
+
 export interface Resource {
     '@id': string;
     '@name': string;
