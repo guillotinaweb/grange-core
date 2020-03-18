@@ -14,6 +14,7 @@ import {
     Role,
     SearchResultsExtended,
     BaseItem,
+    SharingResponse,
 } from './interfaces';
 import { Vocabulary } from './vocabularies';
 import { APIService } from './api.service';
@@ -339,8 +340,12 @@ export class ResourceService {
         return this.api.get(path + '/@actions');
     }
 
-    sharing(path: string): Observable<string[]> {
-        return this.api.get(path + '/@sharing');
+    sharing(path: string, search?: string ): Observable<SharingResponse> {
+        let url = `${path}/@sharing`;
+        if (!!search) {
+            url += `?search=${search}`;
+        }
+        return this.api.get(url);
     }
 
     updateSharing(path: string, sharing: any): Observable<string[]> {

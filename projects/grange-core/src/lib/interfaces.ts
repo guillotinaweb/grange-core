@@ -14,12 +14,12 @@ export interface LoginInfo {
 }
 
 export interface RecoverInfo {
-  login: string;
+    login: string;
 }
 
 export interface ContainerInfo {
-  register: boolean;
-  social: string[];
+    register: boolean;
+    social: string[];
 }
 
 
@@ -131,7 +131,7 @@ export interface SearchResults {
     batching: Batching;
 }
 
-export interface SearchResultsExtended<T extends BaseItem> extends SearchResults{
+export interface SearchResultsExtended<T extends BaseItem> extends SearchResults {
     items: Array<T>;
 }
 
@@ -184,4 +184,22 @@ export interface GrangeFile {
 export interface GrangeImage extends GrangeFile {
     height?: number;
     width?: number;
+}
+
+export interface AvialiableRole {
+    id: string;
+    title: string;
+}
+
+export interface Entrie {
+    type: 'group' | 'user';
+    id: string;
+    roles: { [role: string]: boolean };
+    title: string;
+}
+
+export interface SharingResponse {
+    available_roles: Array<AvialiableRole>;
+    entries: Array<Entrie>;
+    inherit: boolean;
 }
