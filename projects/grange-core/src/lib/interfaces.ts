@@ -194,7 +194,7 @@ export interface AvialiableRole {
 export interface Entrie {
     type: 'group' | 'user';
     id: string;
-    roles: { [role: string]: boolean };
+    roles: { [role: string]: boolean|'global' };
     title: string;
 }
 
