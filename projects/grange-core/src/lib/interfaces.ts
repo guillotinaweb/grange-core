@@ -135,13 +135,13 @@ export interface SearchResultsExtended<T extends BaseItem> extends SearchResults
     items: Array<T>;
 }
 
-export interface Resource {
+export interface Resource extends BaseItem {
     '@id': string;
     '@name': string;
     '@type': string;
     '@uid': string;
     title: string;
-    description?: string;
+    description: string;
     is_folderish: boolean;
     parent: BaseItem;
 }
