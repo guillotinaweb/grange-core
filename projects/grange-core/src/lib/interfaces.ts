@@ -140,6 +140,7 @@ export interface Resource extends BaseItem {
     '@name': string;
     '@type': string;
     '@uid': string;
+    UID: string;
     title: string;
     description: string;
     is_folderish: boolean;
