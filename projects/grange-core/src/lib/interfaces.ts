@@ -195,9 +195,11 @@ export interface AvialiableRole {
 export interface Entrie {
     type: 'group' | 'user';
     id: string;
-    roles: { [role: string]: boolean|'global' };
+    roles: { [role: string]: RoleValue };
     title: string;
 }
+
+export type RoleValue =  boolean | 'global' | 'acquired';
 
 export interface SharingResponse {
     available_roles: Array<AvialiableRole>;
