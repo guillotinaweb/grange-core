@@ -1,3 +1,7 @@
+# 1.2.2 (unreleased)
+
+- Fix Travis so non-tagged version can be merged [ebrehault]
+
 # 1.2.1 (2020-03-07)
 
 - Move NPM package to guillotinaweb organization
