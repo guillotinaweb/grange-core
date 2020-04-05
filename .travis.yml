@@ -35,6 +35,7 @@ deploy:
     on:
       repo: guillotinaweb/grange-core
       branch: master
+      condition: $PUSH_TAG IS present 
   - provider: npm
     edge: true
     email: ebrehault@gmail.com
