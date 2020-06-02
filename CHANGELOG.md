@@ -1,5 +1,8 @@
-# 1.2.2 (unreleased)
+# 1.2.2 (2020-06-02)
 
+- If missing, generate id when creating a resource
+- Add moveTo method for Guillotina (different from move method for Plone)
+- Add websocket service
 - Fix Travis so non-tagged version can be merged [ebrehault]
 
 # 1.2.1 (2020-03-07)
