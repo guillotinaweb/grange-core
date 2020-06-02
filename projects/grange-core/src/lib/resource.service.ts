@@ -28,6 +28,8 @@ interface NavigationItems {
     items: NavigationItem[];
 }
 
+const NON_LOWER_OR_DIGIT = new RegExp(/[^a-z0-9]/g);
+
 @Injectable({
     providedIn: 'root'
 })
@@ -162,8 +164,24 @@ export class ResourceService {
         return '/' + targetPath.split('/').slice(3).join('/');
     }
 
-    create(path: string, model: any) {
+    create(path: string, model: any, generateIdFromTitle = true) {
+        if (!model.id && !!model.title && generateIdFromTitle) {
+            model.id = this.generateIdFromTitle(model.title);
+        }
         return this.emittingModified(this.api.post(path, model), path);
+    }
+
+    generateIdFromTitle(title: string): string {
+        return title.replace(NON_LOWER_OR_DIGIT, (s) => {
+            const c = s.charCodeAt(0);
+            if (c === 32) {
+                return '-';
+            } else if (c >= 65 && c <= 90) {
+                return s.toLowerCase();
+            } else {
+                return '';
+            }
+        });
     }
 
     delete(path: string) {
@@ -199,9 +217,19 @@ export class ResourceService {
     }
 
     move(sourcePath: string, targetPath: string) {
+        // for Plone
         const path = targetPath + '/@move';
         return this.emittingModified(
-            this.api.post(path, { source: this.api.getFullPath(sourcePath) }),
+            this.api.post(path, { source: this.api.getPath(sourcePath) }),
+            path,
+        );
+    }
+
+    moveTo(sourcePath: string, targetPath: string) {
+        // for Guillotina
+        const path = sourcePath + '/@move';
+        return this.emittingModified(
+            this.api.post(path, { destination: this.api.getPath(targetPath) }),
             path,
         );
     }
