@@ -4,6 +4,7 @@ import { AuthenticationService } from './authentication.service';
 import { CacheService } from './cache.service';
 import { LoadingService } from './loading.service';
 import { ResourceService } from './resource.service';
+import { WebsocketService } from './websocket.service';
 
 @Injectable({
     providedIn: 'root'
@@ -15,6 +16,7 @@ export class GrangeCore {
         public auth: AuthenticationService,
         public cache: CacheService,
         public loading: LoadingService,
-        public resource: ResourceService
+        public resource: ResourceService,
+        public websocket: WebsocketService,
     ) { }
 }
