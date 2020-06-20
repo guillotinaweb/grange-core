@@ -1,3 +1,8 @@
+# 1.2.3 (2020-06-02)
+
+- Add config service to global service
+- Fix Travis deployment
+
 # 1.2.2 (2020-06-02)
 
 - If missing, generate id when creating a resource
