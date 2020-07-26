@@ -1,3 +1,7 @@
+# 1.2.4 (2020-07-26)
+
+- Upgrade to Angular 10
+
 # 1.2.3 (2020-06-02)
 
 - Add config service to global service
