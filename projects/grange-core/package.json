@@ -1,6 +1,6 @@
 {
   "name": "@guillotinaweb/grange-core",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "license": "MIT",
   "author": {
     "name": "Eric Brehault",
@@ -20,8 +20,8 @@
     "url": "https://github.com/guillotinaweb/grange-core/issues"
   },
   "peerDependencies": {
-    "@angular/common": "^9.0.4",
-    "@angular/core": "^9.0.4"
+    "@angular/common": "^10.0.5",
+    "@angular/core": "^10.0.5"
   },
   "publishConfig": {
     "access": "public"
