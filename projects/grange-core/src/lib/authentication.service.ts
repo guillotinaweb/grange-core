@@ -5,18 +5,26 @@ import {
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, from, throwError } from 'rxjs';
-import { AuthenticatedStatus, Error, PasswordResetInfo, UserInfoTokenParts, LoginToken } from './interfaces';
+import {
+  AuthenticatedStatus,
+  Error,
+  PasswordResetInfo,
+  UserInfoTokenParts,
+  LoginToken,
+} from './interfaces';
 import { catchError, map, concatMap } from 'rxjs/operators';
 import { ReCaptchaV3Service } from './recaptcha_v3.service';
 import { ConfigurationService } from './configuration.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthenticationService {
-  isAuthenticated: BehaviorSubject<AuthenticatedStatus> = new BehaviorSubject(
-    { state: false, pending: false, username: null },
-  );
+  isAuthenticated: BehaviorSubject<AuthenticatedStatus> = new BehaviorSubject({
+    state: false,
+    pending: false,
+    username: null,
+  });
   basicCredentials?: string[];
 
   constructor(
@@ -27,10 +35,7 @@ export class AuthenticationService {
     let token = localStorage.getItem('auth');
     const lastLogin = localStorage.getItem('auth_time');
     // token expires after 12 hours
-    const expire = config.get(
-      'AUTH_TOKEN_EXPIRES',
-      12 * 60 * 60 * 1000,
-    );
+    const expire = config.get('AUTH_TOKEN_EXPIRES', 12 * 60 * 60 * 1000);
     if (!lastLogin || Date.now() - Date.parse(lastLogin) > expire) {
       localStorage.removeItem('auth');
       token = null;
@@ -49,7 +54,9 @@ export class AuthenticationService {
     if (userTokenInfo === null) {
       return null;
     } else {
-      return userTokenInfo.username || userTokenInfo.sub || userTokenInfo.id || null;
+      return (
+        userTokenInfo.username || userTokenInfo.sub || userTokenInfo.id || null
+      );
     }
   }
 
@@ -83,10 +90,7 @@ export class AuthenticationService {
 
   setAuthToken(token: string) {
     localStorage.setItem('auth', token);
-    localStorage.setItem(
-      'auth_time',
-      new Date().toISOString(),
-    );
+    localStorage.setItem('auth_time', new Date().toISOString());
     this.isAuthenticated.next({
       state: true,
       pending: false,
@@ -102,7 +106,10 @@ export class AuthenticationService {
     if (auth) {
       headers = headers.set('Authorization', 'Bearer ' + auth);
     } else if (!!this.basicCredentials) {
-      headers = headers.set('Authorization', 'Basic ' + btoa(this.basicCredentials.join(':')));
+      headers = headers.set(
+        'Authorization',
+        'Basic ' + btoa(this.basicCredentials.join(':'))
+      );
     }
     if (recaptcha) {
       headers = headers.set('X-VALIDATION-G', recaptcha);
@@ -111,7 +118,11 @@ export class AuthenticationService {
   }
 
   setAuthenticated(isAuthenticated: boolean): void {
-    this.isAuthenticated.next({ state: isAuthenticated, pending: false, username: this.getUsername() });
+    this.isAuthenticated.next({
+      state: isAuthenticated,
+      pending: false,
+      username: this.getUsername(),
+    });
   }
 
   protected error(errorResponse: HttpErrorResponse): Observable<Error> {
@@ -123,20 +134,29 @@ export class AuthenticationService {
 
   login(login: string, password: string, path?: string): Observable<any> {
     if (this.config.get('RECAPTCHA_TOKEN')) {
-      const promise = this.recaptcha.executeAsPromise(this.config.get('RECAPTCHA_TOKEN'), 'login');
+      const promise = this.recaptcha.executeAsPromise(
+        this.config.get('RECAPTCHA_TOKEN'),
+        'login'
+      );
       return from(promise).pipe(
         concatMap((token: string) => {
           return this.doLogin(login, password, path, token);
         }),
         catchError((err) => {
           return throwError(err);
-        }));
+        })
+      );
     } else {
       return this.doLogin(login, password, path);
     }
   }
 
-  doLogin(login: string, password: string, path?: string, recaptcha?: string): Observable<any> {
+  doLogin(
+    login: string,
+    password: string,
+    path?: string,
+    recaptcha?: string
+  ): Observable<any> {
     const headers = this.getHeaders(recaptcha);
     const body = JSON.stringify({
       login,
@@ -145,7 +165,8 @@ export class AuthenticationService {
     return this.http
       .post(this.config.get('BACKEND_URL') + (path || '') + '/@login', body, {
         headers,
-      }).pipe(
+      })
+      .pipe(
         map((data: LoginToken) => {
           if (data.token) {
             this.setAuthToken(data.token);
@@ -193,20 +214,28 @@ export class AuthenticationService {
 
   logout() {
     const headers = this.getHeaders();
-    const url =
-      this.config.get('BACKEND_URL') + `/@logout`;
+    const url = this.config.get('BACKEND_URL') + `/@logout`;
     this.http
       .post(url, {}, { headers })
-      .pipe(
-        catchError(this.error.bind(this))
-      ).subscribe(
-        res => {
+      .pipe(catchError(this.error.bind(this)))
+      .subscribe(
+        (res) => {
           this._logout();
         },
-        err => {
+        (err) => {
           this._logout();
         }
       );
+  }
+
+  // REGISTER
+
+  doRegister(user: any, recaptcha?: string): Observable<any> {
+    const headers = this.getHeaders(recaptcha);
+    const url = this.config.get('BACKEND_URL') + `/@users`;
+    return this.http
+      .post(url, user, { headers })
+      .pipe(catchError(this.error.bind(this)));
   }
 
   // RESET PASSWORD LOGIN
@@ -217,21 +246,23 @@ export class AuthenticationService {
       this.config.get('BACKEND_URL') + `/@users/${login}/reset-password`;
     return this.http
       .post(url, {}, { headers })
-      .pipe(
-        catchError(this.error.bind(this))
-      );
+      .pipe(catchError(this.error.bind(this)));
   }
 
   requestPasswordReset(login: string): Observable<any> {
     if (this.config.get('RECAPTCHA_TOKEN')) {
-      const promise = this.recaptcha.executeAsPromise(this.config.get('RECAPTCHA_TOKEN'), 'reset');
+      const promise = this.recaptcha.executeAsPromise(
+        this.config.get('RECAPTCHA_TOKEN'),
+        'reset'
+      );
       return from(promise).pipe(
         concatMap((token: string) => {
           return this.doRequestPasswordReset(login, token);
         }),
         catchError((err) => {
           return throwError(err);
-        }));
+        })
+      );
     } else {
       return this.doRequestPasswordReset(login);
     }
@@ -255,13 +286,15 @@ export class AuthenticationService {
       `/@users/${resetInfo.login}/reset-password`;
     return this.http
       .post(url, data, { headers })
-      .pipe(
-        catchError(this.error.bind(this))
-      );
+      .pipe(catchError(this.error.bind(this)));
   }
 
   goSocialLogin(provider, callback): void {
-    const callUrl = `${this.config.get('BACKEND_URL')}/@authenticate/${provider}?callback=${location.origin}/${callback}${provider}`;
+    const callUrl = `${this.config.get(
+      'BACKEND_URL'
+    )}/@authenticate/${provider}?callback=${
+      location.origin
+    }/${callback}${provider}`;
     window.location.href = callUrl;
   }
 
@@ -269,54 +302,57 @@ export class AuthenticationService {
 
   doGetValidationSchema(token: string, recaptcha?: string): Observable<any> {
     const headers = this.getHeaders(recaptcha);
-    const url =
-    this.config.get('BACKEND_URL') +
-    `/@validate_schema/${token}`;
+    const url = this.config.get('BACKEND_URL') + `/@validate_schema/${token}`;
     return this.http
       .post(url, {}, { headers })
-      .pipe(
-        catchError(this.error.bind(this))
-    );
+      .pipe(catchError(this.error.bind(this)));
   }
 
   getValidationSchema(token: string): Observable<any> {
     if (this.config.get('RECAPTCHA_TOKEN')) {
-      const promise = this.recaptcha.executeAsPromise(this.config.get('RECAPTCHA_TOKEN'), 'schema');
+      const promise = this.recaptcha.executeAsPromise(
+        this.config.get('RECAPTCHA_TOKEN'),
+        'schema'
+      );
       return from(promise).pipe(
         concatMap((recaptcha: string) => {
           return this.doGetValidationSchema(token, recaptcha);
         }),
         catchError((err) => {
           return throwError(err);
-        }));
+        })
+      );
     } else {
       return this.doGetValidationSchema(token);
     }
   }
 
-  doRealValidation(token: string, model: any, recaptcha?: string): Observable<any> {
+  doRealValidation(
+    token: string,
+    model: any,
+    recaptcha?: string
+  ): Observable<any> {
     const headers = this.getHeaders(recaptcha);
-    const url =
-      this.config.get('BACKEND_URL') +
-      `/@validate/${token}`;
+    const url = this.config.get('BACKEND_URL') + `/@validate/${token}`;
     return this.http
       .post(url, model, { headers })
-      .pipe(
-        catchError(this.error.bind(this))
-    );
+      .pipe(catchError(this.error.bind(this)));
   }
-
 
   doValidation(token: string, model: any): Observable<any> {
     if (this.config.get('RECAPTCHA_TOKEN')) {
-      const promise = this.recaptcha.executeAsPromise(this.config.get('RECAPTCHA_TOKEN'), 'validation');
+      const promise = this.recaptcha.executeAsPromise(
+        this.config.get('RECAPTCHA_TOKEN'),
+        'validation'
+      );
       return from(promise).pipe(
         concatMap((recaptcha: string) => {
           return this.doRealValidation(token, model, recaptcha);
         }),
         catchError((err) => {
           return throwError(err);
-        }));
+        })
+      );
     } else {
       return this.doRealValidation(token, model);
     }
@@ -324,26 +360,26 @@ export class AuthenticationService {
 
   doGetInfo(recaptcha?: string) {
     const headers = this.getHeaders(recaptcha);
-    const url =
-      this.config.get('BACKEND_URL') + `/@info`;
+    const url = this.config.get('BACKEND_URL') + `/@info`;
     return this.http
       .get(url, { headers })
-      .pipe(
-        catchError(this.error.bind(this))
-    );
+      .pipe(catchError(this.error.bind(this)));
   }
 
   getInfo(): Observable<any> {
     if (this.config.get('RECAPTCHA_TOKEN')) {
-
-      const promise = this.recaptcha.executeAsPromise(this.config.get('RECAPTCHA_TOKEN'), 'info');
+      const promise = this.recaptcha.executeAsPromise(
+        this.config.get('RECAPTCHA_TOKEN'),
+        'info'
+      );
       return from(promise).pipe(
         concatMap((recaptcha: string) => {
           return this.doGetInfo(recaptcha);
         }),
         catchError((err) => {
           return throwError(err);
-        }));
+        })
+      );
     } else {
       return this.doGetInfo();
     }
@@ -392,7 +428,8 @@ export function getError(errorResponse: HttpErrorResponse): Error {
   // check if message is a jsonified list
   try {
     const parsedMessage = JSON.parse(error.message);
-    if (Array.isArray(parsedMessage)) { // a list of errors - dexterity validation error for instance
+    if (Array.isArray(parsedMessage)) {
+      // a list of errors - dexterity validation error for instance
       error.errors = parsedMessage;
       error.message = errorResponse.message;
     }
