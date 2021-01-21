@@ -20,8 +20,8 @@
     "url": "https://github.com/guillotinaweb/grange-core/issues"
   },
   "peerDependencies": {
-    "@angular/common": "^10.0.5",
-    "@angular/core": "^10.0.5"
+    "@angular/common": "^11.1.0",
+    "@angular/core": "^11.1.0"
   },
   "publishConfig": {
     "access": "public"
