@@ -1,6 +1,6 @@
 # grange-core
 
-[![Build Status](https://travis-ci.org/guillotinaweb/grange-core.svg?branch=master)](https://travis-ci.org/guillotinaweb/grange-core)
+[![Build Status](https://github.com/guillotinaweb/grange-core/workflows/CI/badge.svg)](https://github.com/guillotinaweb/grange-core/actions?query=workflow%3ACI)
 
 This package provides a set of services to communicate with a Guillotina or Plone RESTAPI backend.
 
