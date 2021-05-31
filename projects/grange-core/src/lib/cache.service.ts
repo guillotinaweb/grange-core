@@ -47,15 +47,16 @@ export class CacheService {
      */
     public get<T>(url: string): Observable<T> {
         const service = this;
-        if (!service.cache.hasOwnProperty(url)) {
+        const fullUrl = service.api.getFullPath(url);
+        if (!service.cache.hasOwnProperty(fullUrl)) {
             if (Object.keys(service.cache).length >= service.maxSize) {
                 // TODO: do not revoke everything
                 this.revoke.emit();
             }
-            service.cache[url] = service.api.get(url).pipe(
+            service.cache[fullUrl] = service.api.get(fullUrl).pipe(
                 // set hits to 0 each time request is actually sent
                 map((observable: Observable<T>) => {
-                    service.hits[url] = 0;
+                    service.hits[fullUrl] = 0;
                     return observable;
                 }),
                 // create a ReplaySubject that stores and emit last response during delay
@@ -66,13 +67,13 @@ export class CacheService {
                 take(1),
                 // increment hits each time request is subscribed
                 map((observable: Observable<T>) => {
-                    const hits = this.hits[url];
-                    service.hits[url] = hits ? hits + 1 : 1;
+                    const hits = this.hits[fullUrl];
+                    service.hits[fullUrl] = hits ? hits + 1 : 1;
                     return observable;
                 })
             );
         }
-        return service.cache[url];
+        return service.cache[fullUrl];
     }
 
     /*

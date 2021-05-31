@@ -9,6 +9,12 @@ import {
     WorkflowInformation,
     WorkflowTransitionOptions,
     Resource,
+    GrangeType,
+    GrangeAction,
+    Role,
+    SearchResultsExtended,
+    BaseItem,
+    SharingResponse,
 } from './interfaces';
 import { Vocabulary } from './vocabularies';
 import { APIService } from './api.service';
@@ -48,28 +54,8 @@ export class ResourceService {
         options: SearchOptions = {},
     ): string {
         const params: string[] = [];
-        Object.keys(query).map(index => {
-            const criteria = query[index];
-            if (typeof criteria === 'boolean') {
-                params.push(index + '=' + (criteria ? '1' : '0'));
-            } else if (typeof criteria === 'string') {
-                params.push(index + '=' + encodeURIComponent(criteria));
-            } else if (Array.isArray(criteria)) {
-                criteria.map(value => {
-                    params.push(index + '=' + encodeURIComponent(value));
-                });
-            } else if (criteria instanceof Date) {
-                params.push(
-                    index + '=' + encodeURIComponent(criteria.toISOString()),
-                );
-            } else {
-                Object.keys(criteria).map(key => {
-                    params.push(
-                        `${index}.${key}=${encodeURIComponent(criteria[key])}`,
-                    );
-                });
-            }
-        });
+        ResourceService._recursiveGetSearchQueryString(query, params);
+
         if (options.sort_on) {
             params.push('sort_on=' + options.sort_on);
         }
@@ -110,6 +96,27 @@ export class ResourceService {
                 observer.complete();
             };
         }
+    }
+
+    public static _recursiveGetSearchQueryString(query: { [key: string]: any }, params: string[] = [], prefix = '') {
+        Object.keys(query).map(index => {
+            const criteria = query[index];
+            if (typeof criteria === 'boolean') {
+                params.push(prefix + index + '=' + (criteria ? '1' : '0'));
+            } else if (['string', 'number'].includes(typeof criteria)) {
+                params.push(prefix + index + '=' + encodeURIComponent(criteria));
+            } else if (Array.isArray(criteria)) {
+                criteria.map(value => {
+                    params.push(prefix + index + '=' + encodeURIComponent(value));
+                });
+            } else if (criteria instanceof Date) {
+                params.push(
+                    prefix + index + '=' + encodeURIComponent(criteria.toISOString()),
+                );
+            } else {
+                ResourceService._recursiveGetSearchQueryString(criteria, params, `${index}.`);
+            }
+        });
     }
 
     constructor(
@@ -203,6 +210,21 @@ export class ResourceService {
         );
         return this.cache.get(path + '@search' + '?' + queryString);
     }
+    findFullObject<T extends BaseItem>(
+        query: { [key: string]: any },
+        path: string = '/',
+        options: SearchOptions = {},
+    ): Observable<SearchResultsExtended<T>> {
+        if (!path.endsWith('/')) {
+            path += '/';
+        }
+        options.fullobjects = true;
+        const queryString = ResourceService.getSearchQueryString(
+            query,
+            options,
+        );
+        return this.cache.get(path + '@search' + '?' + queryString);
+    }
 
     get(path: string, expand?: string[]): Observable<any> {
         expand = Object.keys(this.defaultExpand).concat(expand || []);
@@ -256,7 +278,7 @@ export class ResourceService {
     }
 
     save(path: string, model: any): Observable<any> {
-        return this.emittingModified(this.api.put(path, model), path);
+        return this.emittingModified(this.api.patch(path, model), path);
     }
 
     navigation(): Observable<NavLink[]> {
@@ -338,8 +360,20 @@ export class ResourceService {
         return this.api.get(path + '/@addable-types');
     }
 
-    sharing(path: string): Observable<string[]> {
-        return this.api.get(path + '/@sharing');
+    allTypes(path: string): Observable<GrangeType[]> {
+        return this.api.get(path + '/@types');
+    }
+
+    actions(path: string): Observable<{[key: string]: GrangeAction[]}> {
+        return this.api.get(path + '/@actions');
+    }
+
+    sharing(path: string, search?: string ): Observable<SharingResponse> {
+        let url = `${path}/@sharing`;
+        if (!!search) {
+            url += `?search=${search}`;
+        }
+        return this.api.get(url);
     }
 
     updateSharing(path: string, sharing: any): Observable<string[]> {
@@ -386,4 +420,49 @@ export class ResourceService {
             ...item,
         };
     }
+
+    users(query: string): Observable<any> {
+        let path = '/@users';
+        if (query) {
+            path += `?query=${query}`;
+        }
+        return this.cache.get(path);
+    }
+
+    createUser(user: any): Observable<any> {
+        return this.create('/@users', user);
+    }
+
+    updateUser(user: any): Observable<any> {
+        return this.update(`/@users/${user.id}`, user);
+    }
+
+    deleteUser(user: any): Observable<any> {
+        return this.delete(`/@users/${user.id}`);
+    }
+
+    groups(query: string): Observable<any> {
+        let path = '/@groups';
+        if (query) {
+            path += `?query=${query}`;
+        }
+        return this.cache.get(path);
+    }
+
+    createGroup(group: any): Observable<any> {
+        return this.create('/@groups', group);
+    }
+
+    updateGroup(group: any): Observable<any> {
+        return this.update(`/@groups/${group.id}`, group);
+    }
+
+    deleteGroup(group: any): Observable<any> {
+        return this.delete(`/@groups/${group.id}`);
+    }
+
+    roles(): Observable<Array<Role>> {
+        return this.cache.get('/@roles');
+    }
+
 }

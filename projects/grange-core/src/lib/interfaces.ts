@@ -14,12 +14,12 @@ export interface LoginInfo {
 }
 
 export interface RecoverInfo {
-  login: string;
+    login: string;
 }
 
 export interface ContainerInfo {
-  register: boolean;
-  social: string[];
+    register: boolean;
+    social: string[];
 }
 
 
@@ -127,16 +127,82 @@ export interface Batching {
 export interface SearchResults {
     '@id': string;
     items_total: number;
-    items: any[];
+    items: BaseItem[];
     batching: Batching;
 }
 
-export interface Resource {
+export interface SearchResultsExtended<T extends BaseItem> extends SearchResults {
+    items: Array<T>;
+}
+
+export interface Resource extends BaseItem {
     '@id': string;
     '@name': string;
     '@type': string;
     '@uid': string;
+    UID: string;
     title: string;
-    description?: string;
+    description: string;
     is_folderish: boolean;
+    parent: BaseItem;
+}
+
+export interface GrangeType {
+    '@id': string;
+    addable: boolean;
+    title: string;
+}
+
+export interface GrangeAction {
+    icon: string;
+    id: string;
+    title: string;
+}
+
+export interface BaseItem {
+    '@id': string;
+    '@type': string;
+    description: string;
+    review_state: string;
+    title: string;
+}
+
+export interface Role {
+    '@id': string;
+    '@type': string;
+    id: string;
+    title: string;
+}
+export interface GrangeFile {
+    'content-type': string;
+    data?: string;
+    encoding?: string;
+    download?: string;
+    filename: string;
+    size?: number;
+}
+
+export interface GrangeImage extends GrangeFile {
+    height?: number;
+    width?: number;
+}
+
+export interface AvialiableRole {
+    id: string;
+    title: string;
+}
+
+export interface Entrie {
+    type: 'group' | 'user';
+    id: string;
+    roles: { [role: string]: RoleValue };
+    title: string;
+}
+
+export type RoleValue =  boolean | 'global' | 'acquired';
+
+export interface SharingResponse {
+    available_roles: Array<AvialiableRole>;
+    entries: Array<Entrie>;
+    inherit: boolean;
 }
